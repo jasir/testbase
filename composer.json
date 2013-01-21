@@ -1,0 +1,14 @@
+{
+    "name": "jasir/testbase",
+    "description": "Simple PhpUnit Html runner",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jasir",
+            "email": "sirjarda2@gmail.com"
+        }
+    ],
+    "require": {
+
+    }
+}
