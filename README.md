@@ -14,3 +14,8 @@ Features
 
 Now it is for my personal use, but I plan to heavilly refactor this in (near?) future...
 
+Api
+===
+
+http://apigen.juzna.cz/doc/jasir/testbase/
+
