@@ -428,6 +428,7 @@ class Runner
 
 	protected function translateTestName($name) {
 		$name = substr($name, 4);
+		$name = str_replace('__', '() ', $name);
 		$name = preg_replace_callback(
 			'/0x([\dA-Fa-f][\dA-Fa-f])/s',
 			function ($matches) {
@@ -444,7 +445,7 @@ class Runner
 			$name
 		);
 		$name = str_replace('_', ' ', $name);
-		$name = ucfirst(trim($name));
+		$name = trim($name);
 		return $name;
 	}
 
