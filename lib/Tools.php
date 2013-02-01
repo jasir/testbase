@@ -27,28 +27,38 @@ class Tools {
 	}
 
 	/**
-	 * Recursively deletes directory
-	 * @param string $dir
-	 * @param boolean $deleteRootToo
+	 * @param string $directory
+	 * @param bool $deleteDir
+	 * @return success
+	 * implementation from http://lixlpixel.org/recursive_function/php/recursive_directory_delete/
 	 */
-	public static function unlinkRecursive($dir, $deleteRootToo=FALSE) {
-		if(!$dh = @opendir($dir)) {
-			return;
+	public static function unlinkRecursive ($directory, $deleteDir = FALSE) {
+		if (substr($directory,-1) == '/') {
+			$directory = substr($directory,0,-1);
 		}
-		while (FALSE !== ($obj = readdir($dh))) {
-			if($obj == '.' || $obj == '..') {
-				continue;
+		if (!file_exists($directory) || !is_dir($directory)) {
+			return FALSE;
+		} elseif (is_readable($directory)) {
+			$handle = opendir($directory);
+			while (FALSE !== ($item = readdir($handle)))   {
+				if ($item != '.' && $item != '..') {
+					$path = $directory.'/'.$item;
+					if (is_dir($path)) {
+						recursive_remove_directory($path);
+					} else {
+						unlink($path);
+					}
+				}
 			}
-			if (!@unlink($dir . '/' . $obj)) {
-				self::unlinkRecursive($dir.'/'.$obj, TRUE);
-			}
-		}
 
-		closedir($dh);
-		if ($deleteRootToo) {
-			@rmdir($dir);
+			closedir($handle);
+			if( $deleteDir == FALSE) {
+				if(!rmdir($directory)) {
+					return FALSE;
+				}
+			}
 		}
-		return;
+		return TRUE;
 	}
 
 	/* --- Hidden details --- */
