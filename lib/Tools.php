@@ -61,6 +61,20 @@ class Tools {
 		return TRUE;
 	}
 
+	/**
+	 * Removes unecessary whitespaces for easier comparing
+	 * @param string $s
+	 * @returns string
+	 */
+	public static function normalizeWhitespaces($s) {
+		$s = str_replace("\n", ' ', $s);
+		$s = str_replace("\r", ' ', $s);
+		$s = str_replace("\t", ' ', $s);
+		$s = trim($s);
+		$s = preg_replace('/\s+/x', ' ', $s);
+		return $s;
+	}
+
 	/* --- Hidden details --- */
 
 }
