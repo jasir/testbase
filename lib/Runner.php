@@ -144,13 +144,25 @@ class Runner
 		$testResult = new PHPUnit_Framework_TestResult();
 		$testResult->addListener($listener);
 
+
+
 		// Run the TestSuite
 		$result = $suite->run($testResult);
+
 
 		// Get the results from the listener
 		$xml_result = $listener->getXML();
 
 		$result = $this->processXML($xml_result);
+		//collect output
+		$tests = $suite->tests();
+		foreach($tests as $i => $test) {
+			$output = NULL;
+			if ($test instanceOf \PHPUnit_Framework_TestCase) {
+				$output = $test->getActualOutput();
+			}
+			$result[$i]['output'] = $output;
+		}
 		return $result;
 	}
 
@@ -165,7 +177,7 @@ class Runner
 		?>
 		<table cellspacing="0" class="test_results" border=1>
 		  <thead>
-			 <tr><th>Result</th><th>Name</th><th title="count of assertions">Asserts<br>Count</th><th title="msec">Time<br>in ms</th></tr>
+			 <tr><th>Result</th><th>Name</th><th title="count of assertions">Asserts<br>Count</th><th title="msec">Time<br>in ms</th><th>Output</th></tr>
 		  </thead>
 		  <tbody>
 
@@ -211,6 +223,14 @@ class Runner
 				<td>
 					<?php echo round(1000*$test_result['time'],1)?>
 				</td>
+				<?php
+					if (isset($test_result['output'])) {
+						$output = $test_result['output'];
+					} else {
+						$output = '';
+					}
+				?>
+				<td><pre><?php echo htmlspecialchars($output)?></pre></td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
