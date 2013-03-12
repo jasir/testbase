@@ -183,6 +183,9 @@ class Runner
 
 		  <?php
 				foreach ($test_results as $test_result):
+					if (!is_array($test_result) || !isset($test_result['result'])) {
+						continue;
+					}
 					$result = $test_result['result'];
 					if (!isset($results[$result])) {
 						echo "Unknown result type \"$result\", please modify MyTestRunner.php";
