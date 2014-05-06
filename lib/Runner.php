@@ -103,15 +103,31 @@ class Runner
 
 		foreach ($this->getTestClasses() as $suite => $classes) {
 
-			echo "<div style=\"background:#ccc;font-size:1.3em;padding:0.1em;margin:0.2em 0 0.2em 0;font-family:consolas;\">$suite:</div>";
+			$filter = $this->getFilter();
+			if ($filter) {
+				echo "<div class='filtername'>Filtered to <code>$filter</code>&nbsp;&nbsp;<a href='?'>clear filter</a></div>";
+			}
+
+			echo "<div class='suitename'>suite <code>$suite</code></div>";
 
 			foreach($classes as $testClass) {
-				$result = $this->runOneTest($testClass);
-				$this->renderTestResult($testClass, $result);
+				if ($filter === NULL || strpos($testClass, $filter) === 0) {
+					$result = $this->runOneTest($testClass);
+					$this->renderTestResult($testClass, $result);
+				} else {
+					echo "<div class='notrunned'>";
+					$this->renderClassHeader(new \ReflectionClass($testClass));
+					echo "</div>";
+				}
 			}
 		}
 		echo "</div>";
 		$this->renderHtmlEnd();
+	}
+
+	private function getFilter() {
+		$filter = isset($_GET['filter']) ? $_GET['filter'] : NULL;
+		return empty($filter) ? NULL : $filter;
 	}
 
 	/**
@@ -144,11 +160,8 @@ class Runner
 		$testResult = new PHPUnit_Framework_TestResult();
 		$testResult->addListener($listener);
 
-
-
 		// Run the TestSuite
 		$result = $suite->run($testResult);
-
 
 		// Get the results from the listener
 		$xml_result = $listener->getXML();
@@ -269,13 +282,46 @@ class Runner
 
 		$htmlClass = str_replace('\\', '-', $testClass);
 
-		echo "<div class=\"{$cssClass}\"><a style=\"font-family:consolas\" title=\"$fileName\" href=\"$editLink\">$testClass</a>";
+		echo "<div class=\"{$cssClass}\">";
+
+			//class links
+			$this->renderClassHeader($classAnnotation);
+
+			//result numbers
 			echo "<span style=\"{$cssStyle}\">&nbsp;$errtxt&nbsp;</span> {$detail} ";
+
+			//collapsing
 			echo "<a href=\"#\" onClick=\"javascript:return toggle('{$htmlClass}');\">&#x25ba;</a>";
 		echo "</div>";
 		echo "<div style=\"display:{$display}\"id=\"{$htmlClass}\">$table</div>";
+	}
+
+	private function renderClassHeader(\ReflectionClass $class) {
+
+		$fileName = $class->getFileName();
+		$editLink = $this->createEditLink($fileName);
+		$testClass = $class->getName();
 
 
+		//edit icon
+		echo "<a href='$editLink' title='$fileName - open in editor'>";
+		echo '<img src="data:image/gif;base64,R0lGODlhCgAKAIABAG5ubv///yH5BAEAAAEALAAAAAAKAAoAAAIVhBFpganaHnQRtcXkqTBmp4HadiQFADs=" /></a>';
+		echo "</a>&nbsp;&nbsp;";
+
+		//namespaces clicks
+		$parts = explode("\\", $testClass);
+		$first = TRUE;
+		$pathArr = array();
+		foreach ($parts as $part) {
+			$pathArr[] = $part;
+			if ($first === FALSE) {
+				echo "&nbsp; \ &nbsp;";
+			} else {
+				$first = FALSE;
+			}
+			$path = implode("\\", $pathArr);
+			echo "<a class='classname' href='?filter={$path}'>{$part}</a>";
+		}
 	}
 
 	private function renderHtmlHead() {
