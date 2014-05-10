@@ -110,16 +110,26 @@ class Runner
 
 			echo "<div class='suitename'>suite <code>$suite</code></div>";
 
+			asort($classes);
+
+			$notRunned = '';
 			foreach($classes as $testClass) {
 				if ($filter === NULL || strpos($testClass, $filter) === 0) {
 					$result = $this->runOneTest($testClass);
 					$this->renderTestResult($testClass, $result);
 				} else {
+					ob_start();
 					echo "<div class='notrunned'>";
 					$this->renderClassHeader(new \ReflectionClass($testClass));
 					echo "</div>";
+					$notRunned .= ob_get_contents();
+					ob_end_clean();
 				}
 			}
+		}
+		if ($notRunned) {
+			echo "<h3>Skipped tests: <a href='?'>clear filter</a></h3>";
+			echo $notRunned;
 		}
 		echo "</div>";
 		$this->renderHtmlEnd();
@@ -288,7 +298,7 @@ class Runner
 			$this->renderClassHeader($classAnnotation);
 
 			//result numbers
-			echo "<span style=\"{$cssStyle}\">&nbsp;$errtxt&nbsp;</span> {$detail} ";
+			echo "<span style=\"{$cssStyle}\">&nbsp&nbsp;&nbsp;$errtxt&nbsp;</span> {$detail} ";
 
 			//collapsing
 			echo "<a href=\"#\" onClick=\"javascript:return toggle('{$htmlClass}');\">&#x25ba;</a>";
@@ -337,6 +347,7 @@ class Runner
 		div {padding:0px;margin:0;}
 		a {text-decoration:none;}
 		h1 {font-size:14px;margin:3px, 0px, 3px, 0px;padding:0px;}
+		h3 {color:#555}
 		table {border-collapse:collapse; margin:10px;border-color:white;}
 		#results {margin:0.5em;}
 		.test_results td, .test_results th {border-color:#ccc;}
