@@ -236,9 +236,11 @@ class Runner
 					echo "<a title=\"$method\" href=\"$editLink\">".$this->translateTestName($methodName)."</a>"
 				?>
 				<?php
+
 					if ($test_result['message']) {
+						$message = $this->visibleInvisible(htmlentities(trim($test_result['message'])));
 						?>
-						<pre><?php echo htmlentities(trim($test_result['message'])) ?></pre>
+						<pre class="pree"><?php echo $message; ?></pre>
 						<?php
 					}
 				?>
@@ -252,11 +254,12 @@ class Runner
 				<?php
 					if (isset($test_result['output'])) {
 						$output = $test_result['output'];
+						$output = $this->visibleInvisible(htmlspecialchars($output));
 					} else {
 						$output = '';
 					}
 				?>
-				<td><pre><?php echo htmlspecialchars($output)?></pre></td>
+				<td><pre class="pree"><?php echo $output?></pre></td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
@@ -304,6 +307,13 @@ class Runner
 			echo "<a href=\"#\" onClick=\"javascript:return toggle('{$htmlClass}');\">&#x25ba;</a>";
 		echo "</div>";
 		echo "<div style=\"display:{$display}\"id=\"{$htmlClass}\">$table</div>";
+	}
+
+	private function visibleInvisible($string) {
+		$string = str_replace(' ', '<span class="inv">&#765;</span>', $string);
+		$string = str_replace("\n", "<span class=\"inv\">&#x2193;</span>\n", $string);
+		$string = str_replace("\t", "<span class=\"inv\">&#x25a1;</span>", $string);
+		return $string;
 	}
 
 	private function renderClassHeader(\ReflectionClass $class) {
