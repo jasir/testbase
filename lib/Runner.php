@@ -95,9 +95,14 @@ class Runner
 		ob_end_flush();
 	}
 
+	/**
+	 * Main loop
+	 */
 	private function runInBrowser() {
 		$this->renderHtmlHead();
 		$this->renderEnvironmentInfo();
+
+		echo "<div id='totals'><table class='total-ok'><tr><td><span>running...</span></td></tr></table></div>";
 
 		echo "<div id='results'>";
 
@@ -113,11 +118,29 @@ class Runner
 			asort($classes);
 
 			$notRunned = '';
+			$results = array(
+				'classes' => 0,
+				'classes-skipped' => 0,
+				'Total' => 0,
+				'Pass' => 0,
+				'Fail' => 0,
+				'Error' => 0,
+				'NRY' => 0,
+				'Skip' => 0,
+			);
 			foreach($classes as $testClass) {
+				$results['classes']++;
 				if ($filter === NULL || strpos($testClass, $filter) === 0) {
 					$result = $this->runOneTest($testClass);
-					$this->renderTestResult($testClass, $result);
+					$oneResult = $this->renderTestResult($testClass, $result);
+					$results['Total'] += $oneResult['Total'];
+					$results['Pass'] += $oneResult['Pass'];
+					$results['Fail'] += $oneResult['Fail'];
+					$results['Error'] += $oneResult['Error'];
+					$results['NRY'] += $oneResult['NRY'];
+					$results['Skip'] += $oneResult['Skip'];
 				} else {
+					$results['classes-skipped']++;
 					ob_start();
 					echo "<div class='notrunned'>";
 					$this->renderClassHeader(new \ReflectionClass($testClass));
@@ -132,7 +155,8 @@ class Runner
 			echo $notRunned;
 		}
 		echo "</div>";
-		$this->renderHtmlEnd();
+
+		$this->renderHtmlEnd($results);
 	}
 
 	private function getFilter() {
@@ -322,6 +346,7 @@ class Runner
 			echo "<a href=\"#\" onClick=\"javascript:return toggle('{$htmlClass}');\">&#x25ba;</a>";
 		echo "</div>";
 		echo "<div style=\"display:{$display}\"id=\"{$htmlClass}\">$table</div>";
+		return $results;
 	}
 
 	private function visibleInvisible($string) {
@@ -376,6 +401,7 @@ class Runner
 			$path = implode("\\", $pathArr);
 			echo "<a class='classname' href='?filter={$path}'>{$part}</a>";
 		}
+
 	}
 
 	private function renderHtmlHead() {
@@ -414,6 +440,33 @@ class Runner
 			font-size:0.8em;
 			border-radius: 5px;
 		}
+
+		#totals table {
+			width:100%;
+		}
+		#totals table td {
+			padding: 10px;
+		}
+
+		#totals table.total-fail {
+			background: #ffaaaa;
+		}
+
+		#totals table.total-ok {
+			background: #aaffaa;
+		}
+
+		#totals table td span {
+			font-size:1.5em;
+			font-weight:bold;
+		}
+
+		#totals {
+			height: 40;
+			margin-bottom:1em;
+			margin-top: -10px;
+			margin-left: -10px;
+		}
 		</style>
 		<script language='Javascript'>
 			function toggle(obj) {
@@ -432,7 +485,29 @@ class Runner
 	<?php
 	}
 
-	private function renderHtmlEnd() {
+	private function renderHtmlEnd($results) {
+		$class="total-ok";
+		if ($results['Fail'] > 0) {
+			$class="total-fail";
+		}
+		$runned = $results['classes']  - $results['classes-skipped'];
+		echo <<<EOF
+<script>
+document.getElementById("totals").innerHTML = "<table class='{$class}'>"
+	+ "<td>Runned: <span>{$runned}</span></td>"
+	+ "<td>Total: <span>{$results['classes']}</span></td>"
+	+ "<td>Skipped: <span>{$results['classes-skipped']}</span></td>"
+	+ "<td>Total tests:  <span>{$results['Total']}</span></td>"
+	+ "<td>Passed:  <span>{$results['Pass']}</span></td>"
+	+ "<td>Skipped:  <span>{$results['Skip']}</span></td>"
+	+ "<td>Failed:  <span>{$results['Fail']}</span></td>"
+	+ "<td>Errors:  <span>{$results['Error']}</span></td>"
+	+ "<td>NRY:  <span>{$results['NRY']}</span></td>"
+
++ "</tr></table>"
+;
+</script>
+EOF;
 		echo "</body></html>";
 	}
 
