@@ -310,10 +310,29 @@ class Runner
 	}
 
 	private function visibleInvisible($string) {
-		$string = str_replace(' ', '<span class="inv">&#765;</span>', $string);
-		$string = str_replace("\n", "<span class=\"inv\">&#x2193;</span>\n", $string);
-		$string = str_replace("\t", "<span class=\"inv\">&#x25a1;</span>", $string);
-		return $string;
+		return preg_replace_callback('/([ ]+)|([\n]+)|([\t]+)/s',
+			function($groups) {
+
+				$replace = $groups[0];
+				switch($c = substr($replace, 0, 1)) {
+					case ' ':
+						$char = '&#765;';
+						break;
+					case "\n":
+						$char = '&#x2193;';
+						break;
+					case "\t":
+						$char = "&#x25a1;";
+						break;
+				}
+				$new = str_repeat($char, strlen($replace));
+				$new = "<span class=\"inv\">$new</span>";
+				if ($c === "\n") {
+					$new .= "\n";
+				}
+				return $new;
+
+		}, $string);
 	}
 
 	private function renderClassHeader(\ReflectionClass $class) {
@@ -369,7 +388,8 @@ class Runner
 		td.test_pass {background:green;color:white;}
 		td.test_other {background:yellow}
 		td.result {text-align:center;vertical-align: middle;font-weight: bold;}
-		pre {font-family:consolas;font-size:11px;margin:0px;line-height:12px;}
+		pre.pree {font-family:consolas; font-size:15px; margin:0px;line-height:19px;}
+		pre.pree span.inv {font-size:15px; color:#ccc}
 		</style>
 		<script language='Javascript'>
 			function toggle(obj) {
