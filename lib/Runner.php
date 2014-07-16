@@ -194,6 +194,10 @@ class Runner
 	//---------------------------------------------------------------------------
 
 	private function renderTestResult($testClass, $test_results) {
+		$outputsNumber = 0;
+
+		// vykreslení tabulky s testy
+
 		ob_start();
 		$results = array('Total' => 0, 'Pass' => 0, 'Fail' => 0, 'Error' => 0, 'NRY' => 0, 'Skip' => 0);
 		$classAnnotation = new \Nette\Reflection\ClassType($testClass);
@@ -254,7 +258,11 @@ class Runner
 				<?php
 					if (isset($test_result['output'])) {
 						$output = $test_result['output'];
-						$output = $this->visibleInvisible(htmlspecialchars($output));
+						if (!empty($output)) {
+							$outputsNumber++;
+							$output = $this->visibleInvisible(htmlspecialchars($output));
+						}
+
 					} else {
 						$output = '';
 					}
@@ -267,6 +275,8 @@ class Runner
 
 		<?php
 		$table = ob_get_clean();
+
+		//vykreslení hlavičky testu
 
 		$fileName = $classAnnotation->fileName;
 		$editLink = $this->createEditLink($fileName);
@@ -302,6 +312,11 @@ class Runner
 
 			//result numbers
 			echo "<span style=\"{$cssStyle}\">&nbsp&nbsp;&nbsp;$errtxt&nbsp;</span> {$detail} ";
+
+			if ($outputsNumber > 0) {
+				echo "<span class=\"outputs\">tests with output: <span style=\"color:yellow;\">{$outputsNumber}</span></span>";
+				//$display =' block';
+			}
 
 			//collapsing
 			echo "<a href=\"#\" onClick=\"javascript:return toggle('{$htmlClass}');\">&#x25ba;</a>";
@@ -390,6 +405,15 @@ class Runner
 		td.result {text-align:center;vertical-align: middle;font-weight: bold;}
 		pre.pree {font-family:consolas; font-size:15px; margin:0px;line-height:19px;}
 		pre.pree span.inv {font-size:15px; color:#ccc}
+		span.outputs {
+			background:darkblue;
+			color:white;
+			padding:2px 6px;
+			margin:3px 6px;
+			font-weight:bold;
+			font-size:0.8em;
+			border-radius: 5px;
+		}
 		</style>
 		<script language='Javascript'>
 			function toggle(obj) {
