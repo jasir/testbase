@@ -208,10 +208,12 @@ class Runner
 			$output = NULL;
 			if ($test instanceOf \PHPUnit_Framework_TestCase) {
 				$output = $test->getActualOutput();
-				$result[$i]['output'] = $output;
+				$result[$test->getName()]['output'] = $output;
 			} elseif ($test instanceof \PHPUnit_Framework_TestSuite_DataProvider) {
+
 				foreach ($test->tests() as $j => $subtest) {
-					$result[$j]['output'] = $subtest->getActualOutput();
+					$name = $subtest->getName();
+					$result[$name]['output'] = $subtest->getActualOutput();
 				}
 			}
 
@@ -580,7 +582,7 @@ EOF;
 			 }
 			 $result['time'] = (string)$testcase['time'];
 			 $result['assertions'] = (string)$testcase['assertions'];
-			 $test_results[] = $result;
+			 $test_results[$result['name']] = $result;
 		}
 		return $test_results;
 
