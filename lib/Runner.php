@@ -358,7 +358,7 @@ class Runner
 	}
 
 	private function visibleInvisible($string) {
-		return preg_replace_callback('/([ ]+)|([\n]+)|([\t]+)/s',
+		return preg_replace_callback('/([ ]+)|([\n])|([\t]+)/s',
 			function($groups) {
 
 				$replace = $groups[0];
