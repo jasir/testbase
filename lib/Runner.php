@@ -417,7 +417,7 @@ class Runner
 		<html>
 		<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Tests <?php if($this->isUnderDebugger()) {echo " - DEBUGGER";}?></title>
+		<title><?php echo  "tests:" . ($this->getFilter()) . ($this->isUnderDebugger() ?: " - DEBUGGER") ?></title>
 		<style>
 		body{font-family: arial; padding:0em; margin:0em;}
 
