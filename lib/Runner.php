@@ -288,18 +288,24 @@ class Runner
 					<?php echo round(1000*$test_result['time'],1)?>
 				</td>
 				<?php
+					$output = NULL;
 					if (isset($test_result['output'])) {
 						$output = $test_result['output'];
 						if (!empty($output)) {
 							$outputsNumber++;
 							$output = $this->visibleInvisible(htmlspecialchars($output));
+	
 						}
 
 					} else {
 						$output = '';
 					}
 				?>
-				<td><pre class="pree"><?php echo $output?></pre></td>
+				<td><?php if ($output) :?>
+					 <pre class="pree"><?php echo $output; ?></pre>
+					 <div style="text-align:left"><a class="copy-button" onclick="toclipboard()" data-clipboard-text="Copy Me!">copy</a></div>
+					 <?php endif?>
+				</td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
@@ -515,8 +521,16 @@ document.getElementById("totals").innerHTML = "<table class='{$class}'>"
 + "</tr></table>"
 ;
 </script>
+</body>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.5/ZeroClipboard.Core.min.js"></script>
+<script>
+	ZeroClipboard.config( { swfPath: "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.5/ZeroClipboard.swf" } );
+	function toclipboard(event, target) {
+		console.log(event, target)
+	}
+</script>
+</html>
 EOF;
-		echo "</body></html>";
 	}
 
 	private function renderEnvironmentInfo() {
