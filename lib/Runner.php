@@ -362,8 +362,7 @@ class Runner
 			return;
 		}
 		$translated = $this->visibleInvisible(htmlspecialchars($message));
-		?><pre class="pree pre-translated"><?php echo $translated; ?></pre><pre class="pree pre-nontranslated"><?php echo $message ?></pre>
-		<?php
+		?><pre class="pree pre-translated"><?php echo $translated; ?></pre><pre class="pree pre-nontranslated"><?php echo $message ?></pre><?php
 	}
 
 	private function visibleInvisible($string) {
