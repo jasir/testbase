@@ -102,13 +102,16 @@ class Runner
 		$this->renderHtmlHead();
 		$this->renderEnvironmentInfo();
 
+		//totals
 		echo "<div id='totals'><table class='total-ok'><tr><td><span>running...</span></td></tr></table></div>";
 
-		echo "<div id='results'>";
+		//right menu
+		$this->renderRightMenu();
 
+		echo "<div id='results'>";
 		foreach ($this->getTestClasses() as $suite => $classes) {
 
-			$filter = $this->getFilter();
+			$filter = $this->getFilterParameter();
 			if ($filter) {
 				echo "<div class='filtername'>Filtered to <code>$filter</code>&nbsp;&nbsp;<a href='?'>clear filter</a></div>";
 			}
@@ -160,7 +163,7 @@ class Runner
 		$this->renderHtmlEnd($results);
 	}
 
-	private function getFilter() {
+	private function getFilterParameter() {
 		$filter = isset($_GET['filter']) ? $_GET['filter'] : NULL;
 		return empty($filter) ? NULL : $filter;
 	}
@@ -274,10 +277,8 @@ class Runner
 				<?php
 
 					if ($test_result['message']) {
-						$message = $this->visibleInvisible(htmlentities(trim($test_result['message'])));
-						?>
-						<pre class="pree"><?php echo $message; ?></pre>
-						<?php
+						$message = trim($test_result['message']);
+						$this->displayPreMessage($message);
 					}
 				?>
 				</td>
@@ -292,14 +293,13 @@ class Runner
 						$output = $test_result['output'];
 						if (!empty($output)) {
 							$outputsNumber++;
-							$output = $this->visibleInvisible(htmlspecialchars($output));
 						}
 
 					} else {
 						$output = '';
 					}
 				?>
-				<td><pre class="pree"><?php echo $output?></pre></td>
+				<td><pre class="pree"><?php $this->displayPreMessage($output); ?></pre></td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
@@ -355,6 +355,15 @@ class Runner
 		echo "</div>";
 		echo "<div style=\"display:{$display}\"id=\"{$htmlClass}\">$table</div>";
 		return $results;
+	}
+
+	private function displayPreMessage($message) {
+		if (empty($message)) {
+			return;
+		}
+		$translated = $this->visibleInvisible(htmlspecialchars($message));
+		?><pre class="pree pre-translated"><?php echo $translated; ?></pre><pre class="pree pre-nontranslated"><?php echo $message ?></pre>
+		<?php
 	}
 
 	private function visibleInvisible($string) {
@@ -417,10 +426,9 @@ class Runner
 		<html>
 		<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title><?php echo  "tests:" . ($this->getFilter()) . ($this->isUnderDebugger() ?: " - DEBUGGER") ?></title>
+		<title><?php echo  "tests:" . ($this->getFilterParameter()) . ($this->isUnderDebugger() ?: " - DEBUGGER") ?></title>
 		<style>
 		body{font-family: arial; padding:0em; margin:0em;}
-
 		body * {font-size:12px;}
 		div {padding:0px;margin:0;}
 		a {text-decoration:none;}
@@ -428,6 +436,7 @@ class Runner
 		h3 {color:#555}
 		table {border-collapse:collapse; margin:10px;border-color:white;}
 		#results {margin:0.5em;}
+		.hidden {display:none;}
 		.test_results td, .test_results th {border-color:#ccc;}
 		.test_results td, .test_results th, .test_results td pre  {vertical-align: top; text-align: left;}
 		.test_results td {text-align:center;padding:3px;}
@@ -438,7 +447,14 @@ class Runner
 		td.test_other {background:yellow}
 		td.result {text-align:center;vertical-align: middle;font-weight: bold;}
 		pre.pree {font-family:consolas; font-size:15px; margin:0px;line-height:19px;}
+		pre.pree a {
+			padding:3px;
+			background:#eee;
+			border:1px solid #aaa;
+			float:right;
+		}
 		pre.pree span.inv {font-size:15px; color:#ccc}
+		.pre-translated {display:none;}
 		span.outputs {
 			background:darkblue;
 			color:white;
@@ -454,6 +470,7 @@ class Runner
 		}
 		#totals table td {
 			padding: 10px;
+			text-align: center;
 		}
 
 		#totals table.total-fail {
@@ -475,6 +492,11 @@ class Runner
 			margin-top: -10px;
 			margin-left: -10px;
 		}
+
+		#rightmenu {
+			float:right;
+		}
+
 		</style>
 		<script language='Javascript'>
 			function toggle(obj) {
@@ -516,6 +538,22 @@ document.getElementById("totals").innerHTML = "<table class='{$class}'>"
 ;
 </script>
 EOF;
+
+	echo <<<EOF
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script>
+	function showWhitespaces(show) {
+		$('#a-show-whitespaces').first().toggleClass('hidden');
+		$('#a-hide-whitespaces').first().toggleClass('hidden');
+		$('.pre-nontranslated, .pre-translated').each(function(id, element) {
+			$(element).toggle();
+		});
+	}
+</script>
+
+EOF;
+
+
 		echo "</body></html>";
 	}
 
@@ -536,6 +574,16 @@ EOF;
 		echo $this->isUnderDebugger() ? "<div style=\"padding:5 0 5 5;margin:0px;color:white;background:green;font-weight:bold;\">DEBUGGER ACTIVE</div>" : '';
 
 
+
+	}
+
+	private function renderRightMenu() {
+		echo <<<EOF
+<div id="rightmenu">
+	<a id="a-show-whitespaces" onclick="showWhitespaces(true)" href="#">Show whitespaces</a>
+	<a class="hidden" onclick="showWhitespaces(false)" id="a-hide-whitespaces" href="#">Hide whitespaces</a>
+</div>
+EOF;
 
 	}
 
