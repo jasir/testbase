@@ -445,7 +445,7 @@ class Runner
 		td.test_pass {background:green;color:white;}
 		td.test_other {background:yellow}
 		td.result {text-align:center;vertical-align: middle;font-weight: bold;}
-		pre.pree {font-family:consolas; font-size:15px; margin:0px;line-height:19px;}
+		pre.pree {font-family:consolas, monospace; font-size:15px; margin:0px;line-height:19px;}
 		pre.pree a {
 			padding:3px;
 			background:#eee;
