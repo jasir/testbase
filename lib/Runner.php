@@ -312,7 +312,7 @@ class Runner
 						$output = '';
 					}
 				?>
-				<td><pre class="pree"><?php $this->displayPreMessage($output); ?></pre></td>
+				<td class="output"><pre class="pree"><?php $this->displayPreMessage($output); ?></pre></td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
@@ -452,13 +452,15 @@ class Runner
 		.test_results td, .test_results th {border-color:#ccc;}
 		.test_results td, .test_results th, .test_results td pre  {vertical-align: top; text-align: left;}
 		.test_results td {text-align:center;padding:3px;}
-		.test_results thead th {background:#abc; padding:2px; padding-left:5px;font-weight:bold; color:black; vertical-align:middle;}
+		.test_results thead th {background:#abc; padding:2px; padding-left:5px;font-weight:bold; color:black; vertical-align:bottom; text-align: left;}
 		.test_results th {background:white;padding:3px;font-weight:normal;}
-		td.test_fail {background:darkred;color:white}
-		td.test_pass {background:green;color:white;}
-		td.test_other {background:yellow}
-		td.result {text-align:center;vertical-align: middle;font-weight: bold;}
-		pre.pree {font-family:consolas, monospace; font-size:15px; margin:0px;line-height:19px;}
+		#results td {background: #eee;}
+		#results td.test_fail {background:darkred;color:white}
+		#results td.test_pass {background:green;color:white;}
+		#results td.test_other {background:yellow}
+		#results td.result {text-align:center;vertical-align: middle;font-weight: bold;}
+		#results td.output {}
+		pre.pree {font-family:consolas, monospace; font-size:11px; margin:0px;line-height:14px;}
 		pre.pree a {
 			padding:3px;
 			background:#eee;
@@ -467,6 +469,7 @@ class Runner
 		}
 		pre.pree span.inv {font-size:15px; color:#ccc}
 		.pre-translated {display:none;}
+		#results td.output pre {background: white; margin:5px;}
 		span.outputs {
 			background:darkblue;
 			color:white;
