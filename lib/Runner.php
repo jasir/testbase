@@ -86,21 +86,21 @@ class Runner
 	 * Runs test suite and renders output according to environment (console,...)
 	 */
 	public function run() {
-		ob_start();
 		if ($this->isConsole() === TRUE) {
 			$this->runInConsole();
 		} else {
 			$this->runInBrowser();
 		}
-		ob_end_flush();
 	}
 
 	/**
 	 * Main loop
 	 */
 	private function runInBrowser() {
+		ob_start();
 		$this->renderHtmlHead();
 		$this->renderEnvironmentInfo();
+
 
 		//totals
 		echo "<div id='totals'><table class='total-ok'><tr><td><span>running...</span></td></tr></table></div>";
@@ -109,8 +109,11 @@ class Runner
 		$this->renderRightMenu();
 
 		echo "<div id='results'>";
-		foreach ($this->getTestClasses() as $suite => $classes) {
 
+
+		$output = ob_get_clean();
+		foreach ($this->getTestClasses() as $suite => $classes) {
+			ob_start();
 			$filter = $this->getFilterParameter();
 			if ($filter) {
 				echo "<div class='filtername'>Filtered to <code>$filter</code>&nbsp;&nbsp;<a href='?'>clear filter</a></div>";
@@ -131,12 +134,16 @@ class Runner
 				'NRY' => 0,
 				'Skip' => 0,
 			);
-
+			$output .= ob_get_clean();
+			echo $output;
 			foreach ($classes as $testClass) {
+				$output = '';
 				$results['classes']++;
 				if ($filter === NULL || strpos($testClass, $filter) === 0) {
 					$result = $this->runOneTest($testClass);
+					ob_start();
 					$oneResult = $this->renderTestResult($testClass, $result);
+					$output .= ob_get_clean();
 					$results['Total'] += $oneResult['Total'];
 					$results['Pass'] += $oneResult['Pass'];
 					$results['Fail'] += $oneResult['Fail'];
@@ -144,16 +151,22 @@ class Runner
 					$results['NRY'] += $oneResult['NRY'];
 					$results['Skip'] += $oneResult['Skip'];
 				} else {
+					ob_start();
 					$results['classes-skipped']++;
 					ob_start();
 					echo "<div class='notrunned'>";
 					$this->renderClassHeader(new \ReflectionClass($testClass));
 					echo "</div>";
 					$notRunned .= ob_get_contents();
-					ob_end_clean();
+					$output .= ob_get_clean();
 				}
+				echo $output;
 			}
 		}
+
+
+
+
 		if ($notRunned) {
 			echo "<h3>Skipped tests: <a href='?'>clear filter</a></h3>";
 			echo $notRunned;
