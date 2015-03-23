@@ -446,22 +446,45 @@ class Runner
 		.test_results td {text-align:center;padding:3px;}
 		.test_results thead th {background:#abc; padding:2px; padding-left:5px;font-weight:bold; color:black; vertical-align:bottom; text-align: left;}
 		.test_results th {background:white;padding:3px;font-weight:normal;}
-		#results td {background: #eee;}
+		#results td {background: #eee;vertical-align: top;}
 		#results td.test_fail {background:darkred;color:white}
 		#results td.test_pass {background:green;color:white;}
 		#results td.test_other {background:yellow}
 		#results td.result {text-align:center;vertical-align: middle;font-weight: bold;}
-		#results td.output {}
-		pre.pree {font-family:consolas, monospace; font-size:11px; margin:0px;line-height:14px;}
+		#results td.output {
+
+		}
+		pre.pree {
+			font-family:consolas, monospace;
+			font-size:11px;
+			margin:5px;
+			padding: 5px;
+			line-height:14px;
+			background: black;
+			color:green;
+			max-width: 1024px;
+			max-height: 600px;
+			overflow: auto;
+		}
 		pre.pree a {
 			padding:3px;
 			background:#eee;
 			border:1px solid #aaa;
+			color:black;
 			float:right;
 		}
+
+		#results td.output pre.pree {
+				background: white;
+				margin:5px;
+				padding:px;
+		}
+
 		pre.pree span.inv {font-size:15px; color:#ccc}
+
 		.pre-translated {display:none;}
-		#results td.output pre {background: white; margin:5px;}
+
+
 		span.outputs {
 			background:darkblue;
 			color:white;
