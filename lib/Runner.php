@@ -7,14 +7,6 @@
 *
 * Usage:
 * <code>
-* class SomeTest extends \TestBase\TestCase {
-*   ...
-* }
-* \TestBase\Runner::test('SomeTest');
-* </code>
-*
-* Example 2:
-* <code>
 * if (\TestBase\Runner::isRunnedByPHPUnit() === FALSE) {
 *      $runner = new \TestBase\Runner();
 *      $runner->addSuite('toStringTest');
@@ -691,15 +683,11 @@ EOF;
 	}
 
 	public static function isRunnedByPHPUnit() {
-		return defined('PHPUnit_MAIN_METHOD');
-	}
-
-	private static function isRunnedByDirectoryRun() {
-		return defined('LocalRunTest_HANDLES_THIS');
+		return (php_sapi_name() === 'cli');
 	}
 
 	private static function isRunnedByOthers() {
-		return self::isRunnedByPHPUnit() || self::isRunnedByDirectoryRun();
+		return self::isRunnedByPHPUnit();
 	}
 
 	protected function createEditLink($file, $line = 1) {
