@@ -143,14 +143,14 @@ class Runner
 					$results['NRY'] += $oneResult['NRY'];
 					$results['Skip'] += $oneResult['Skip'];
 				} else {
-					ob_start();
+
 					$results['classes-skipped']++;
 					ob_start();
 					echo "<div class='notrunned'>";
 					$this->renderClassHeader(new \ReflectionClass($testClass));
 					echo "</div>";
 					$notRunned .= ob_get_contents();
-					$output .= ob_get_clean();
+					ob_end_clean();
 				}
 				echo $output;
 			}
