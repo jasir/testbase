@@ -283,6 +283,7 @@ class Runner
 
 					if ($test_result['message']) {
 						$message = trim($test_result['message']);
+						$message = $this->enhanceMessageWithLinks($message);
 						$this->displayPreMessage($message);
 					}
 				?>
@@ -368,6 +369,36 @@ class Runner
 		}
 		$translated = $this->visibleInvisible(htmlspecialchars($message));
 		?><pre class="pree pre-translated"><?php echo $translated; ?></pre><pre class="pree pre-nontranslated"><?php echo $message ?></pre><?php
+	}
+
+	private function enhanceMessageWithLinks($message) {
+		$message = preg_replace_callback(
+			'%(?P<file>
+			# windows path
+			^((
+			  [A-Za-z]+):[\\\\/] #C:\
+			  ([\w\-._@]+[\\\\/]{0,1}
+			)+
+			| #linux
+			(
+			  (/|\.\.)        # .|..|/
+			  [\w/.\-_@/]+
+			)
+			))
+			:# line number
+			(?P<line>[\d]+)
+			%imx',
+			array($this, 'createEditorLinks'), $message
+		);
+		return $message;
+	}
+
+	private function createEditorLinks($groups) {
+		//DebugBreak();
+		$file = $groups['file'];
+		$line = $groups['line'];
+		$link = $this->createEditLink($file, $line);
+		return "<a href=\"{$link}\">{$file}:{$line}</a>";
 	}
 
 	private function visibleInvisible($string) {
@@ -467,13 +498,12 @@ class Runner
 			overflow: auto;
 		}
 		pre.pree a {
-			padding:3px;
-			background:#eee;
-			border:1px solid #aaa;
-			color:black;
-			float:right;
+			color:lightblue;
+			text-decoration: underline;
 		}
-
+		pre.pree a:hover {
+			color: white;
+		}
 		#results td.output pre.pree {
 				background: white;
 				color: #444;
