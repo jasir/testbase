@@ -304,7 +304,7 @@ class Runner
 						$output = '';
 					}
 				?>
-				<td class="output"><pre class="pree"><?php $this->displayPreMessage($output); ?></pre></td>
+				<td class="output"><?php $this->displayPreMessage($output); ?></td>
 		  </tr>
 		  <?php endforeach; ?>
 		  </tbody>
@@ -450,7 +450,7 @@ class Runner
 		#results td.test_fail {background:darkred;color:white}
 		#results td.test_pass {background:green;color:white;}
 		#results td.test_other {background:yellow}
-		#results td.result {text-align:center;vertical-align: middle;font-weight: bold;}
+		#results td.result {text-align:center;vertical-align: top;font-weight: bold;}
 		#results td.output {
 
 		}
@@ -461,7 +461,7 @@ class Runner
 			padding: 5px;
 			line-height:14px;
 			background: black;
-			color:green;
+			color:lightgreen;
 			max-width: 1024px;
 			max-height: 600px;
 			overflow: auto;
@@ -476,11 +476,13 @@ class Runner
 
 		#results td.output pre.pree {
 				background: white;
+				color: #444;
 				margin:5px;
 				padding:px;
 		}
 
-		pre.pree span.inv {font-size:15px; color:#ccc}
+		pre.pree span.inv {font-size:11px; color:green;}
+		#results td.output pre.pree span.inv {font-size:11px; color:#ccc;}
 
 		.pre-translated {display:none;}
 
