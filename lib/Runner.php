@@ -368,7 +368,8 @@ class Runner
 			return;
 		}
 		$translated = $this->visibleInvisible(htmlspecialchars($message));
-		?><pre class="pree pre-translated"><?php echo $translated; ?></pre><pre class="pree pre-nontranslated"><?php echo $message ?></pre><?php
+		echo "<pre class=\"pree pre-translated\">{$translated}</pre>\n";
+		echo "<pre class=\"pree pre-nontranslated\">{$message}</pre>\n";
 	}
 
 	private function enhanceMessageWithLinks($message) {
@@ -402,29 +403,10 @@ class Runner
 	}
 
 	private function visibleInvisible($string) {
-		return preg_replace_callback('/([ ]+)|([\n])|([\t]+)/s',
-			function($groups) {
 
-				$replace = $groups[0];
-				switch($c = substr($replace, 0, 1)) {
-					case ' ':
-						$char = '&#765;';
-						break;
-					case "\n":
-						$char = '&#x2193;';
-						break;
-					case "\t":
-						$char = "&#x25a1;";
-						break;
-				}
-				$new = str_repeat($char, strlen($replace));
-				$new = "<span class=\"inv\">$new</span>";
-				if ($c === "\n") {
-					$new .= "\n";
-				}
-				return $new;
-
-		}, $string);
+		$string = str_replace(array(" ", "\n", "\t"), array('&#765;', "&#x2193;\n", '&#x25a1;' ), $string);
+		$string = preg_replace("/(\&\#765\;)+/", "<span class=\"inv\">$0</span>", $string);
+		return $string;
 	}
 
 	private function renderClassHeader(\ReflectionClass $class) {
